@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Legal Work — TonyGroup</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ── Design tokens — Light ── */
+    :root {
+      --bg: #FFFFFF; --surface: #F8F8F7; --surface2: #F0F0EF;
+      --border: rgba(17,17,17,0.09); --border-hover: rgba(17,17,17,0.22);
+      --text: #111111; --muted: #777777; --accent: #111111;
+      --accent-dim: rgba(17,17,17,0.04); --glyph-color: #777777;
+      --bio-color: rgba(17,17,17,0.62); --sep-color: rgba(17,17,17,0.2);
+      --rule-h: 2px; --glow: none;
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', 'Sarabun', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── Glow ── */
+    .page-glow {
+      position: fixed; inset: 0; pointer-events: none; z-index: 0;
+      background: var(--glow);
+    }
+
+    /* ── Nav ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      height: 52px;
+      border-bottom: var(--rule-h) solid var(--sep-color);
+      display: flex; align-items: center;
+      padding: 0 24px; gap: 0;
+      background: var(--bg);
+    }
+
+    /* ── Logo mark .tg-e ── */
+    .tg-e {
+      display: flex; align-items: center; gap: 9px;
+      text-decoration: none; flex-shrink: 0; margin-right: 32px;
+    }
+    .tg-e-bars {
+      display: flex; flex-direction: column; gap: 3px;
+    }
+    .tg-e-bars span {
+      display: block; height: 1.5px; background: var(--glyph-color);
+      transition: background 0.2s;
+    }
+    .tg-e-bars span:nth-child(1) { width: 16px; }
+    .tg-e-bars span:nth-child(2) { width: 11px; }
+    .tg-e-bars span:nth-child(3) { width: 16px; }
+    .tg-e-label {
+      font-family: 'Instrument Sans', sans-serif;
+      font-size: 13px; font-weight: 600;
+      color: var(--text); letter-spacing: -0.01em;
+    }
+    .tg-e-label em {
+      font-style: normal; color: var(--muted); font-weight: 400;
+    }
+
+    .nav-links { display: flex; gap: 2px; flex: 1; }
+    .nav-link {
+      padding: 6px 12px; font-size: 12.5px; font-weight: 500;
+      color: var(--muted); text-decoration: none;
+      border-radius: 5px;
+      transition: color 0.15s, background 0.15s;
+      white-space: nowrap;
+    }
+    .nav-link:hover { color: var(--text); background: var(--surface2); }
+    .nav-link.active {
+      color: var(--text); background: var(--accent-dim);
+      border: 1px solid var(--border);
+    }
+
+    .nav-right { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+    .nav-disclaimer {
+      font-size: 10px; font-weight: 500; letter-spacing: 0.06em;
+      text-transform: uppercase; color: var(--muted);
+      background: rgba(255,200,0,0.08); border: 1px solid rgba(255,200,0,0.18);
+      border-radius: 4px; padding: 3px 8px; white-space: nowrap;
+    }
+
+    /* ── Theme toggle ── */
+    .theme-toggle {
+      position: fixed; top: 14px; right: 20px; z-index: 200;
+      width: 28px; height: 28px;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 5px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; color: var(--muted);
+      transition: border-color 0.15s, color 0.15s;
+    }
+    .theme-toggle:hover { border-color: var(--border-hover); color: var(--text); }
+
+    /* ── Main ── */
+    main { position: relative; z-index: 1; }
+
+    /* ── Hero ── */
+    .hero {
+      max-width: 860px; margin: 0 auto;
+      padding: 140px 24px 72px;
+    }
+    .hero-eyebrow {
+      font-size: 10px; font-weight: 600; letter-spacing: 0.16em;
+      text-transform: uppercase; color: var(--muted);
+      margin-bottom: 24px;
+    }
+    .hero-name {
+      font-family: 'Instrument Sans', 'Sarabun', sans-serif;
+      font-size: clamp(48px, 7vw, 80px);
+      font-weight: 700; letter-spacing: -0.03em;
+      line-height: 1.0; margin-bottom: 20px;
+      color: var(--text);
+    }
+    .hero-bio {
+      font-size: 15px; font-weight: 300; line-height: 1.72;
+      color: var(--bio-color); max-width: 520px;
+      margin-bottom: 40px;
+    }
+    .hero-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+    .btn-primary {
+      padding: 11px 24px; font-size: 13px; font-weight: 500;
+      font-family: 'Inter', 'Sarabun', sans-serif;
+      background: var(--accent); color: var(--bg);
+      border: none; border-radius: 5px;
+      text-decoration: none; cursor: pointer;
+      transition: opacity 0.15s;
+    }
+    .btn-primary:hover { opacity: 0.82; }
+    .btn-secondary {
+      padding: 11px 24px; font-size: 13px; font-weight: 500;
+      font-family: 'Inter', 'Sarabun', sans-serif;
+      background: var(--surface); color: var(--text);
+      border: 1px solid var(--border); border-radius: 5px;
+      text-decoration: none; cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .btn-secondary:hover { border-color: var(--border-hover); background: var(--surface2); }
+
+    /* ── Identity strip ── */
+    .identity-strip {
+      max-width: 860px; margin: 0 auto;
+      padding: 0 24px 72px;
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 0; border-top: 1px solid var(--border);
+    }
+    .identity-item {
+      padding: 28px 24px;
+      border-right: 1px solid var(--border);
+    }
+    .identity-item:last-child { border-right: none; }
+    .identity-glyph {
+      font-size: 18px; color: var(--glyph-color);
+      margin-bottom: 10px; opacity: 0.7;
+    }
+    .identity-label {
+      font-size: 10px; font-weight: 600; letter-spacing: 0.16em;
+      text-transform: uppercase; color: var(--muted);
+      margin-bottom: 6px;
+    }
+    .identity-desc {
+      font-size: 13px; font-weight: 300; color: var(--bio-color);
+      line-height: 1.6;
+    }
+
+    /* ── Section ── */
+    .section {
+      max-width: 860px; margin: 0 auto;
+      padding: 0 24px 80px;
+    }
+    .section-label {
+      font-size: 10px; font-weight: 600; letter-spacing: 0.16em;
+      text-transform: uppercase; color: var(--muted);
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* ── Cards ── */
+    .card-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      padding: 20px;
+      text-decoration: none;
+      display: block;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .card:hover { background: var(--surface2); border-color: var(--border-hover); }
+    .card-glyph {
+      width: 36px; height: 36px;
+      background: var(--accent-dim);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Instrument Sans', sans-serif;
+      font-size: 11px; font-weight: 600;
+      color: var(--glyph-color);
+      margin-bottom: 16px;
+      letter-spacing: 0.02em;
+    }
+    .card-name {
+      font-size: 13px; font-weight: 500; color: var(--text);
+      margin-bottom: 6px;
+    }
+    .card-desc {
+      font-size: 11.5px; font-weight: 300; color: var(--muted);
+      line-height: 1.6;
+    }
+
+    /* ── Disclaimer ── */
+    .disclaimer-block {
+      max-width: 860px; margin: 0 auto;
+      padding: 0 24px 72px;
+    }
+    .disclaimer-inner {
+      background: rgba(255,200,0,0.04);
+      border: 1px solid rgba(255,200,0,0.15);
+      border-radius: 5px; padding: 16px 20px;
+      display: flex; gap: 12px; align-items: flex-start;
+    }
+    .disclaimer-icon { flex-shrink: 0; color: rgba(255,200,0,0.6); font-size: 13px; padding-top: 1px; }
+    .disclaimer-text { font-size: 12px; color: var(--muted); line-height: 1.7; }
+    .disclaimer-text strong { color: rgba(255,200,0,0.7); font-weight: 500; }
+
+    /* ── Footer ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 20px 24px;
+      max-width: 860px; margin: 0 auto;
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 11px; color: var(--muted);
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 640px) {
+      nav { padding: 0 16px; }
+      .hero { padding: 110px 16px 56px; }
+      .identity-strip { grid-template-columns: 1fr; padding: 0 16px 56px; }
+      .identity-item { border-right: none; border-bottom: 1px solid var(--border); }
+      .identity-item:last-child { border-bottom: none; }
+      .section { padding: 0 16px 60px; }
+      .card-grid { grid-template-columns: 1fr; }
+      .disclaimer-block { padding: 0 16px 56px; }
+      footer { flex-direction: column; gap: 8px; text-align: center; padding: 16px; }
+      .theme-toggle { top: 13px; right: 14px; }
+      .nav-disclaimer { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="page-glow"></div>
+
+<!-- Theme toggle -->
+
+<!-- Nav -->
+<nav>
+  <a class="tg-e" href="/">
+    <div class="tg-e-bars">
+      <span></span><span></span><span></span>
+    </div>
+    <span class="tg-e-label">Legal Work <em>by TonyGroup</em></span>
+  </a>
+  <div class="nav-links">
+    <a class="nav-link" href="/search">ค้นกฎหมาย</a>
+    <a class="nav-link" href="/analyze">วิเคราะห์คดี</a>
+    <a class="nav-link" href="/draft">ร่างเอกสาร</a>
+  </div>
+  <div class="nav-right">
+    <span class="nav-disclaimer">ไม่ใช่คำปรึกษาทางกฎหมาย</span>
+  </div>
+</nav>
+
+<main>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-eyebrow">Legal AI Platform · Thailand</div>
+    <h1 class="hero-name">Legal Work</h1>
+    <p class="hero-bio">ค้นกฎหมาย · วิเคราะห์คดี · ร่างเอกสาร<br/>ออกแบบมาสำหรับทนายความและผู้ประกอบวิชาชีพกฎหมาย</p>
+    <div class="hero-actions">
+      <a class="btn-primary" href="/search">เริ่มค้นหากฎหมาย</a>
+      <a class="btn-secondary" href="/analyze">วิเคราะห์คดีของคุณ</a>
+    </div>
+  </section>
+
+  <!-- Identity strip -->
+  <div class="identity-strip">
+    <div class="identity-item">
+      <div class="identity-glyph">◎</div>
+      <div class="identity-label">ค้นกฎหมาย</div>
+      <div class="identity-desc">กฎหมายหลัก 42,755 ฉบับ · กฎ คปภ. 249 ฉบับ · คำพิพากษาฎีกา 1,207 คดี</div>
+    </div>
+    <div class="identity-item">
+      <div class="identity-glyph">⌥</div>
+      <div class="identity-label">วิเคราะห์คดี</div>
+      <div class="identity-desc">ป้อนข้อเท็จจริง — AI สร้าง Legal Memo ระบุประเด็นและบทกฎหมาย</div>
+    </div>
+    <div class="identity-item">
+      <div class="identity-glyph">⌘</div>
+      <div class="identity-label">ร่างเอกสาร</div>
+      <div class="identity-desc">เลือก template สัญญา · กรอกข้อมูลคู่สัญญา · AI ร่างเอกสารเบื้องต้น</div>
+    </div>
+  </div>
+
+  <!-- Cards -->
+  <section class="section">
+    <div class="section-label">เครื่องมือ</div>
+    <div class="card-grid">
+
+      <a class="card" href="/search">
+        <div class="card-glyph">Sr</div>
+        <div class="card-name">ค้นหากฎหมาย</div>
+        <div class="card-desc">พิมพ์คำถามภาษาธรรมชาติ AI ค้นหาและสรุปกฎหมายที่เกี่ยวข้อง</div>
+      </a>
+
+      <a class="card" href="/analyze">
+        <div class="card-glyph">An</div>
+        <div class="card-name">วิเคราะห์คดี</div>
+        <div class="card-desc">ป้อนข้อเท็จจริงของคดี AI สร้าง Legal Memo พร้อมแนวคำพิพากษา</div>
+      </a>
+
+      <a class="card" href="/draft">
+        <div class="card-glyph">Dr</div>
+        <div class="card-name">ร่างเอกสาร</div>
+        <div class="card-desc">เลือก template เอกสารกฎหมาย AI ร่างต้นฉบับเบื้องต้นให้ทนายตรวจทาน</div>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- Disclaimer -->
+  <div class="disclaimer-block">
+    <div class="disclaimer-inner">
+      <span class="disclaimer-icon">⚠</span>
+      <div class="disclaimer-text">
+        <strong>ข้อควรระวัง:</strong> ข้อมูลและเอกสารทั้งหมดที่ระบบสร้างขึ้นเป็นเพียงการอ้างอิงเบื้องต้น ไม่ถือเป็นคำปรึกษาทางกฎหมาย (Legal Advice) ผลลัพธ์ที่ได้อาจมีข้อผิดพลาด สำหรับคดีจริงกรุณาปรึกษาทนายความผู้มีใบอนุญาต · TonyGroup Legal © 2026
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <span>TonyGroup Legal Work</span>
+  <span>ข้อมูลเพื่อการศึกษาและอ้างอิงเบื้องต้นเท่านั้น</span>
+</footer>
+
+<script>
+  (function(){
+
+  })();
+
+  function toggleTheme() {
+    const next = cur === 'dark' ? 'light' : 'dark';
+
+  }
+</script>
+</body>
+</html>

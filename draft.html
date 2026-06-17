@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ร่างเอกสาร — Legal Work</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #FFFFFF; --surface: #F8F8F7; --surface2: #F0F0EF;
+      --border: rgba(17,17,17,0.09); --border-hover: rgba(17,17,17,0.22);
+      --text: #111111; --muted: #777777; --accent: #111111;
+      --accent-dim: rgba(17,17,17,0.04); --glyph-color: #777777;
+      --bio-color: rgba(17,17,17,0.62); --sep-color: rgba(17,17,17,0.2);
+      --rule-h: 2px; --glow: none; --focus-ring: rgba(17,17,17,0.12);
+      --paper-bg: #FFFFFF;
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', 'Sarabun', system-ui, sans-serif;
+      background: var(--bg); color: var(--text);
+      min-height: 100vh; -webkit-font-smoothing: antialiased;
+    }
+
+    .page-glow { position: fixed; inset: 0; pointer-events: none; z-index: 0; background: var(--glow); }
+
+    /* ── Nav ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      height: 52px; background: var(--bg);
+      border-bottom: var(--rule-h) solid var(--sep-color);
+      display: flex; align-items: center; padding: 0 24px; gap: 0;
+    }
+    .tg-e {
+      display: flex; align-items: center; gap: 9px;
+      text-decoration: none; flex-shrink: 0; margin-right: 32px;
+    }
+    .tg-e-bars { display: flex; flex-direction: column; gap: 3px; }
+    .tg-e-bars span { display: block; height: 1.5px; background: var(--glyph-color); }
+    .tg-e-bars span:nth-child(1) { width: 16px; }
+    .tg-e-bars span:nth-child(2) { width: 11px; }
+    .tg-e-bars span:nth-child(3) { width: 16px; }
+    .tg-e-label {
+      font-family: 'Instrument Sans', sans-serif;
+      font-size: 13px; font-weight: 600; color: var(--text); letter-spacing: -0.01em;
+    }
+    .tg-e-label em { font-style: normal; color: var(--muted); font-weight: 400; }
+    .nav-links { display: flex; gap: 2px; flex: 1; }
+    .nav-link {
+      padding: 6px 12px; font-size: 12.5px; font-weight: 500;
+      color: var(--muted); text-decoration: none; border-radius: 5px;
+      transition: color 0.15s, background 0.15s; white-space: nowrap;
+    }
+    .nav-link:hover { color: var(--text); background: var(--surface2); }
+    .nav-link.active { color: var(--text); background: var(--accent-dim); border: 1px solid var(--border); }
+    .nav-right { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+    .nav-disclaimer {
+      font-size: 10px; font-weight: 500; letter-spacing: 0.06em;
+      text-transform: uppercase; color: var(--muted);
+      background: rgba(255,200,0,0.08); border: 1px solid rgba(255,200,0,0.18);
+      border-radius: 4px; padding: 3px 8px; white-space: nowrap;
+    }
+
+    .theme-toggle {
+      position: fixed; top: 14px; right: 20px; z-index: 200;
+      width: 28px; height: 28px;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 5px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; color: var(--muted);
+      transition: border-color 0.15s, color 0.15s;
+    }
+    .theme-toggle:hover { border-color: var(--border-hover); color: var(--text); }
+
+    /* ── Layout ── */
+    main {
+      position: relative; z-index: 1;
+      max-width: 1120px; margin: 0 auto;
+      padding: 84px 24px 80px;
+    }
+
+    /* ── Page header ── */
+    .page-header { margin-bottom: 28px; }
+    .page-eyebrow {
+      font-size: 10px; font-weight: 600; letter-spacing: 0.16em;
+      text-transform: uppercase; color: var(--muted); margin-bottom: 10px;
+    }
+    .page-title {
+      font-family: 'Instrument Sans', 'Sarabun', sans-serif;
+      font-size: clamp(22px, 3.5vw, 34px); font-weight: 700;
+      letter-spacing: -0.025em; margin-bottom: 8px;
+    }
+    .page-sub { font-size: 14px; font-weight: 300; color: var(--bio-color); line-height: 1.6; }
+
+    /* ── 3-column layout ── */
+    .draft-workspace {
+      display: grid;
+      grid-template-columns: 200px 1fr 1fr;
+      gap: 10px; align-items: start;
+    }
+
+    /* ── Template sidebar ── */
+    .template-list {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 5px; overflow: hidden;
+    }
+    .template-list-header {
+      padding: 10px 14px; border-bottom: 1px solid var(--border);
+      font-size: 10px; font-weight: 600; letter-spacing: 0.16em;
+      text-transform: uppercase; color: var(--muted);
+    }
+    .template-item {
+      padding: 10px 14px; cursor: pointer;
+      border-bottom: 1px solid var(--border);
+      transition: background 0.12s;
+    }
+    .template-item:last-child { border-bottom: none; }
+    .template-item:hover { background: var(--surface2); }
+    .template-item.active {
+      background: var(--accent-dim);
+      border-left: 2px solid var(--accent);
+      padding-left: 12px;
+    }
+    .template-name { font-size: 12.5px; font-weight: 500; color: var(--text); margin-bottom: 2px; }
+    .template-desc { font-size: 10.5px; font-weight: 300; color: var(--muted); line-height: 1.4; }
+
+    /* ── Form panel ── */
+    .form-panel {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 5px; overflow: hidden;
+    }
+    .panel-header {
+      padding: 12px 16px; border-bottom: 1px solid var(--border);
+      font-size: 10px; font-weight: 600; letter-spacing: 0.16em;
+      text-transform: uppercase; color: var(--muted);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .form-body { padding: 16px; }
+    .field { margin-bottom: 12px; }
+    .field:last-child { margin-bottom: 0; }
+    .field-label {
+      font-size: 12px; font-weight: 500; color: var(--text);
+      margin-bottom: 5px; display: block;
+    }
+    .field-label span { color: var(--muted); font-weight: 400; margin-left: 4px; }
+    input[type="text"], input[type="date"], textarea, select {
+      width: 100%; padding: 9px 12px;
+      font-family: 'Inter', 'Sarabun', sans-serif; font-size: 13.5px; font-weight: 300;
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: 5px; color: var(--text); outline: none; resize: vertical;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    input:focus, textarea:focus, select:focus {
+      border-color: var(--border-hover); box-shadow: 0 0 0 3px var(--focus-ring);
+    }
+    input::placeholder, textarea::placeholder { color: var(--muted); }
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+
+    .btn-generate {
+      width: 100%; padding: 12px; margin-top: 14px;
+      font-size: 13px; font-weight: 500; font-family: 'Inter', 'Sarabun', sans-serif;
+      background: var(--accent); color: var(--bg);
+      border: none; border-radius: 5px; cursor: pointer;
+      transition: opacity 0.15s;
+    }
+    .btn-generate:hover { opacity: 0.82; }
+    .btn-generate:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    /* ── Preview panel ── */
+    .preview-panel {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 5px; overflow: hidden;
+      display: flex; flex-direction: column;
+    }
+    .preview-body {
+      padding: 20px; min-height: 500px;
+      background: var(--paper-bg);
+      overflow-y: auto;
+      display: flex; flex-direction: column; align-items: center;
+      transition: background 0.2s;
+    }
+
+    /* ── A4 paper ── */
+    .a4-paper {
+      background: #ffffff;
+      color: #111111;
+      width: 210mm;
+      min-height: 297mm;
+      padding: 25mm 22mm 25mm 25mm;
+      box-shadow: 0 4px 32px rgba(0,0,0,0.22);
+      font-family: 'Sarabun', 'TH Sarabun New', serif;
+      font-size: 16px; line-height: 2;
+      white-space: pre-wrap; word-break: break-word;
+      flex-shrink: 0;
+    }
+    @media (max-width: 900px) {
+      .a4-paper { width: 100%; min-height: unset; padding: 16px; font-size: 14px; }
+    }
+
+    @media print {
+      nav, .template-list, .form-panel, .panel-header,
+      .output-actions, .disclaimer, .page-glow, .theme-toggle { display: none !important; }
+      main { padding: 0 !important; }
+      .draft-workspace { display: block !important; }
+      .preview-panel { border: none !important; box-shadow: none !important; }
+      .preview-body { padding: 0 !important; background: white !important; }
+      .a4-paper { box-shadow: none !important; width: 100% !important; padding: 15mm !important; }
+    }
+
+    /* ── States ── */
+    .state-idle {
+      display: flex; flex-direction: column; align-items: center;
+      justify-content: center; min-height: 300px;
+      color: var(--muted); text-align: center; gap: 10px;
+    }
+    .state-idle-icon { font-size: 28px; opacity: 0.35; }
+    .state-idle-text { font-size: 13px; font-weight: 300; line-height: 1.7; }
+
+    .thinking { display: flex; gap: 5px; align-items: center; font-size: 13px; color: var(--muted); padding: 20px 0; }
+    .dot { width: 5px; height: 5px; border-radius: 50%; background: var(--accent); animation: pulse 1.4s ease-in-out infinite; }
+    .dot:nth-child(2) { animation-delay: 0.2s; }
+    .dot:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes pulse { 0%,80%,100% { opacity: 0.2; transform: scale(0.9); } 40% { opacity: 1; transform: scale(1); } }
+
+    .output-actions { padding: 12px 16px; border-top: 1px solid var(--border); display: flex; gap: 8px; }
+    .btn-export {
+      padding: 7px 14px; font-size: 12px; font-weight: 500;
+      border: 1px solid var(--border); border-radius: 4px;
+      background: transparent; color: var(--muted);
+      cursor: pointer; font-family: 'Inter', 'Sarabun', sans-serif;
+      transition: border-color 0.15s, color 0.15s;
+    }
+    .btn-export:hover { border-color: var(--border-hover); color: var(--text); }
+
+    .disclaimer {
+      margin-top: 20px; padding: 14px 16px;
+      border: 1px solid rgba(255,200,0,0.12);
+      background: rgba(255,200,0,0.04); border-radius: 5px;
+      font-size: 11px; color: var(--muted); line-height: 1.7;
+    }
+    .disclaimer strong { color: rgba(255,200,0,0.7); font-weight: 500; }
+
+    @media (max-width: 900px) {
+      .draft-workspace { grid-template-columns: 1fr; }
+      .template-list { display: flex; overflow-x: auto; border-radius: 5px; }
+      .template-item { border-bottom: none; border-right: 1px solid var(--border); min-width: 150px; }
+      .template-item:last-child { border-right: none; }
+      .template-item.active { border-left: none; border-bottom: 2px solid var(--accent); padding-left: 14px; }
+    }
+    @media (max-width: 640px) {
+      main { padding: 72px 16px 60px; }
+      nav { padding: 0 16px; }
+      .nav-disclaimer { display: none; }
+      .theme-toggle { top: 13px; right: 14px; }
+      .field-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="page-glow"></div>
+
+<nav>
+  <a class="tg-e" href="/">
+    <div class="tg-e-bars"><span></span><span></span><span></span></div>
+    <span class="tg-e-label">Legal Work <em>by TonyGroup</em></span>
+  </a>
+  <div class="nav-links">
+    <a class="nav-link" href="/search">ค้นกฎหมาย</a>
+    <a class="nav-link" href="/analyze">วิเคราะห์คดี</a>
+    <a class="nav-link active" href="/draft">ร่างเอกสาร</a>
+  </div>
+  <div class="nav-right">
+    <span class="nav-disclaimer">ไม่ใช่คำปรึกษาทางกฎหมาย</span>
+  </div>
+</nav>
+
+<main>
+
+  <div class="page-header">
+    <div class="page-eyebrow">Document Drafting · AI Template</div>
+    <h1 class="page-title">ร่างเอกสาร</h1>
+    <p class="page-sub">เลือก template เอกสาร กรอกข้อมูลคู่สัญญา — AI ร่างเอกสารเบื้องต้นให้ทนายตรวจทาน</p>
+  </div>
+
+  <div class="draft-workspace">
+
+    <!-- Template list -->
+    <div class="template-list">
+      <div class="template-list-header">Template</div>
+      <div class="template-item active" onclick="selectTemplate(this,'employment_contract')">
+        <div class="template-name">สัญญาจ้างแรงงาน</div>
+        <div class="template-desc">ลูกจ้างรายเดือน / รายวัน</div>
+      </div>
+      <div class="template-item" onclick="selectTemplate(this,'sale_contract')">
+        <div class="template-name">สัญญาซื้อขาย</div>
+        <div class="template-desc">ทรัพย์สิน / สังหาริมทรัพย์</div>
+      </div>
+      <div class="template-item" onclick="selectTemplate(this,'lease_contract')">
+        <div class="template-name">สัญญาเช่า</div>
+        <div class="template-desc">อสังหาริมทรัพย์</div>
+      </div>
+      <div class="template-item" onclick="selectTemplate(this,'power_of_attorney')">
+        <div class="template-name">หนังสือมอบอำนาจ</div>
+        <div class="template-desc">General / เฉพาะกิจ</div>
+      </div>
+      <div class="template-item" onclick="selectTemplate(this,'loan_contract')">
+        <div class="template-name">สัญญากู้ยืมเงิน</div>
+        <div class="template-desc">บุคคลธรรมดา / นิติบุคคล</div>
+      </div>
+      <div class="template-item" onclick="selectTemplate(this,'notice_letter')">
+        <div class="template-name">หนังสือบอกเลิกสัญญา</div>
+        <div class="template-desc">ทุกประเภทสัญญา</div>
+      </div>
+      <div class="template-item" onclick="selectTemplate(this,'complaint_letter')">
+        <div class="template-name">คำร้องทุกข์</div>
+        <div class="template-desc">ก่อนฟ้องคดี</div>
+      </div>
+    </div>
+
+    <!-- Form panel -->
+    <div class="form-panel">
+      <div class="panel-header">
+        <span id="form-title">สัญญาจ้างแรงงาน</span>
+      </div>
+      <div class="form-body" id="form-body">
+
+        <div class="field">
+          <label class="field-label">วันที่ทำสัญญา</label>
+          <input type="date" id="f-date" />
+        </div>
+
+        <div class="field">
+          <label class="field-label">สถานที่ทำสัญญา</label>
+          <input type="text" id="f-place" placeholder="เช่น: กรุงเทพมหานคร" />
+        </div>
+
+        <div class="field">
+          <label class="field-label">นายจ้าง / ฝ่ายที่ 1</label>
+          <input type="text" id="f-party1" placeholder="ชื่อ-นามสกุล หรือ ชื่อบริษัท" />
+        </div>
+
+        <div class="field">
+          <label class="field-label">ที่อยู่ฝ่ายที่ 1</label>
+          <input type="text" id="f-addr1" placeholder="ที่อยู่ตามบัตรประชาชน หรือ ทะเบียนนิติบุคคล" />
+        </div>
+
+        <div class="field">
+          <label class="field-label">ลูกจ้าง / ฝ่ายที่ 2</label>
+          <input type="text" id="f-party2" placeholder="ชื่อ-นามสกุล" />
+        </div>
+
+        <div class="field">
+          <label class="field-label">ที่อยู่ฝ่ายที่ 2</label>
+          <input type="text" id="f-addr2" placeholder="ที่อยู่ตามบัตรประชาชน" />
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label class="field-label">ตำแหน่งงาน</label>
+            <input type="text" id="f-position" placeholder="เช่น: นักบัญชี" />
+          </div>
+          <div class="field">
+            <label class="field-label">ค่าจ้าง (บาท/เดือน)</label>
+            <input type="text" id="f-salary" placeholder="เช่น: 25,000" />
+          </div>
+        </div>
+
+        <div class="field-row">
+          <div class="field">
+            <label class="field-label">วันเริ่มงาน</label>
+            <input type="date" id="f-start" />
+          </div>
+          <div class="field">
+            <label class="field-label">ระยะทดลองงาน <span>(วัน)</span></label>
+            <input type="text" id="f-probation" placeholder="เช่น: 119" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="field-label">เงื่อนไขพิเศษ <span>(optional)</span></label>
+          <textarea id="f-special" rows="3" placeholder="เช่น: ห้ามทำงานกับคู่แข่ง 1 ปีหลังลาออก"></textarea>
+        </div>
+
+        <button class="btn-generate" onclick="doDraft()">ร่างเอกสาร</button>
+      </div>
+    </div>
+
+    <!-- Preview -->
+    <div class="preview-panel">
+      <div class="panel-header">
+        <span>ตัวอย่างเอกสาร</span>
+        <span style="font-size:10px;color:var(--muted);">Draft — ยังไม่ใช่ฉบับสมบูรณ์</span>
+      </div>
+      <div class="preview-body" id="preview-body">
+        <div class="state-idle">
+          <div class="state-idle-icon">📄</div>
+          <div class="state-idle-text">
+            กรอกข้อมูลด้านซ้ายแล้วกด<br/><strong>ร่างเอกสาร</strong>
+          </div>
+        </div>
+      </div>
+      <div class="output-actions" id="doc-actions" style="display:none;">
+        <button class="btn-export" onclick="copyDoc()">คัดลอก</button>
+        <button class="btn-export" onclick="window.print()">พิมพ์ / PDF</button>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="disclaimer">
+    <strong>ข้อควรระวัง:</strong>
+    เอกสารที่ AI ร่างให้เป็นเพียงต้นฉบับเบื้องต้น ยังไม่ครบถ้วนสมบูรณ์ตามกฎหมาย
+    ต้องผ่านการตรวจทานและลงนามโดยทนายความก่อนนำไปใช้งานจริงทุกครั้ง
+  </div>
+
+</main>
+
+<script>
+  (function(){
+
+  })();
+  function toggleTheme() {
+    const next = cur === 'dark' ? 'light' : 'dark';
+
+  }
+
+  let currentTemplate = 'employment_contract';
+
+  function selectTemplate(el, name) {
+    document.querySelectorAll('.template-item').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+    currentTemplate = name;
+    document.getElementById('form-title').textContent = el.querySelector('.template-name').textContent;
+    document.getElementById('preview-body').innerHTML = `
+      <div class="state-idle">
+        <div class="state-idle-icon">📄</div>
+        <div class="state-idle-text">กรอกข้อมูลแล้วกด <strong>ร่างเอกสาร</strong></div>
+      </div>`;
+    document.getElementById('doc-actions').style.display = 'none';
+  }
+
+  async function doDraft() {
+    btn.disabled = true; btn.textContent = 'กำลังร่าง…';
+
+    const fields = {
+      template_id: currentTemplate,
+      date: document.getElementById('f-date').value,
+      place: document.getElementById('f-place').value,
+      party1: document.getElementById('f-party1').value,
+      addr1: document.getElementById('f-addr1').value,
+      party2: document.getElementById('f-party2').value,
+      addr2: document.getElementById('f-addr2').value,
+      position: document.getElementById('f-position').value,
+      salary: document.getElementById('f-salary').value,
+      start: document.getElementById('f-start').value,
+      probation: document.getElementById('f-probation').value,
+      special: document.getElementById('f-special').value,
+    };
+
+    showDraftLoading();
+
+    try {
+      const ctrl = new AbortController();
+      const timer = setTimeout(() => ctrl.abort(), 90000);
+      const r = await fetch('/api/draft', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(fields),
+        signal: ctrl.signal
+      });
+      clearTimeout(timer);
+      const data = await r.json();
+      renderDoc(data);
+    } catch(e) {
+      const msg = e.name === 'AbortError' ? 'หมดเวลา — กรุณาลองใหม่อีกครั้ง' : e.message;
+      document.getElementById('preview-body').innerHTML =
+        `<div style="color:var(--muted);font-size:13px;padding:20px 0;">เกิดข้อผิดพลาด: ${escHtml(msg)}</div>`;
+    } finally {
+      btn.disabled = false; btn.textContent = 'ร่างเอกสาร';
+    }
+  }
+
+  function showDraftLoading() {
+    document.getElementById('preview-body').innerHTML = `
+      <div class="thinking">
+        <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+        <span style="margin-left:8px">AI กำลังร่างเอกสาร…</span>
+      </div>`;
+    document.getElementById('doc-actions').style.display = 'none';
+  }
+
+  function renderDoc(data) {
+    if (data.error) {
+      document.getElementById('preview-body').innerHTML =
+        `<div style="color:var(--muted);font-size:13px;">${escHtml(data.error)}</div>`;
+      return;
+    }
+    const doc = data.document || '';
+    document.getElementById('preview-body').innerHTML =
+      `<div class="a4-paper" id="doc-content">${escHtml(doc)}</div>`;
+    document.getElementById('doc-actions').style.display = 'flex';
+  }
+
+  function copyDoc() {
+    const el = document.getElementById('doc-content');
+    if (el) navigator.clipboard.writeText(el.textContent);
+  }
+
+  function escHtml(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+</script>
+</body>
+</html>

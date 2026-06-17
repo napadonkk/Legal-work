@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ค้นหากฎหมาย — Legal Work</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #FFFFFF; --surface: #F8F8F7; --surface2: #F0F0EF;
+      --border: rgba(17,17,17,0.09); --border-hover: rgba(17,17,17,0.22);
+      --text: #111111; --muted: #777777; --accent: #111111;
+      --accent-dim: rgba(17,17,17,0.04); --glyph-color: #777777;
+      --bio-color: rgba(17,17,17,0.62); --sep-color: rgba(17,17,17,0.2);
+      --rule-h: 2px; --glow: none;
+      --focus-ring: rgba(17,17,17,0.12);
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', 'Sarabun', system-ui, sans-serif;
+      background: var(--bg); color: var(--text);
+      min-height: 100vh; -webkit-font-smoothing: antialiased;
+    }
+
+    .page-glow {
+      position: fixed; inset: 0; pointer-events: none; z-index: 0;
+      background: var(--glow);
+    }
+
+    /* ── Nav ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      height: 52px; background: var(--bg);
+      border-bottom: var(--rule-h) solid var(--sep-color);
+      display: flex; align-items: center; padding: 0 24px; gap: 0;
+    }
+    .tg-e {
+      display: flex; align-items: center; gap: 9px;
+      text-decoration: none; flex-shrink: 0; margin-right: 32px;
+    }
+    .tg-e-bars { display: flex; flex-direction: column; gap: 3px; }
+    .tg-e-bars span { display: block; height: 1.5px; background: var(--glyph-color); }
+    .tg-e-bars span:nth-child(1) { width: 16px; }
+    .tg-e-bars span:nth-child(2) { width: 11px; }
+    .tg-e-bars span:nth-child(3) { width: 16px; }
+    .tg-e-label {
+      font-family: 'Instrument Sans', sans-serif;
+      font-size: 13px; font-weight: 600; color: var(--text); letter-spacing: -0.01em;
+    }
+    .tg-e-label em { font-style: normal; color: var(--muted); font-weight: 400; }
+
+    .nav-links { display: flex; gap: 2px; flex: 1; }
+    .nav-link {
+      padding: 6px 12px; font-size: 12.5px; font-weight: 500;
+      color: var(--muted); text-decoration: none; border-radius: 5px;
+      transition: color 0.15s, background 0.15s; white-space: nowrap;
+    }
+    .nav-link:hover { color: var(--text); background: var(--surface2); }
+    .nav-link.active { color: var(--text); background: var(--accent-dim); border: 1px solid var(--border); }
+
+    .nav-right { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+    .nav-disclaimer {
+      font-size: 10px; font-weight: 500; letter-spacing: 0.06em;
+      text-transform: uppercase; color: var(--muted);
+      background: rgba(255,200,0,0.08); border: 1px solid rgba(255,200,0,0.18);
+      border-radius: 4px; padding: 3px 8px; white-space: nowrap;
+    }
+
+    .theme-toggle {
+      position: fixed; top: 14px; right: 20px; z-index: 200;
+      width: 28px; height: 28px;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 5px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; color: var(--muted);
+      transition: border-color 0.15s, color 0.15s;
+    }
+    .theme-toggle:hover { border-color: var(--border-hover); color: var(--text); }
+
+    /* ── Main ── */
+    main {
+      position: relative; z-index: 1;
+      max-width: 860px; margin: 0 auto;
+      padding: 96px 24px 80px;
+    }
+
+    /* ── Page header ── */
+    .page-header { margin-bottom: 40px; }
+    .page-eyebrow {
+      font-size: 10px; font-weight: 600; letter-spacing: 0.16em;
+      text-transform: uppercase; color: var(--muted); margin-bottom: 12px;
+    }
+    .page-title {
+      font-family: 'Instrument Sans', 'Sarabun', sans-serif;
+      font-size: clamp(28px, 4vw, 40px); font-weight: 700;
+      letter-spacing: -0.025em; line-height: 1.1; margin-bottom: 10px;
+    }
+    .page-sub { font-size: 14px; font-weight: 300; color: var(--bio-color); line-height: 1.72; }
+
+    /* ── Search box ── */
+    .search-wrap { position: relative; margin-bottom: 16px; }
+    .search-icon {
+      position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
+      color: var(--muted); pointer-events: none;
+    }
+    #search-input {
+      width: 100%; padding: 14px 56px 14px 46px;
+      font-family: 'Inter', 'Sarabun', sans-serif; font-size: 15px; font-weight: 300;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 5px; color: var(--text); outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    #search-input:focus { border-color: var(--border-hover); box-shadow: 0 0 0 3px var(--focus-ring); }
+    #search-input::placeholder { color: var(--muted); }
+    .search-btn {
+      position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+      padding: 7px 16px; font-size: 12.5px; font-weight: 500;
+      font-family: 'Inter', 'Sarabun', sans-serif;
+      background: var(--accent); color: var(--bg);
+      border: none; border-radius: 4px; cursor: pointer;
+      transition: opacity 0.15s;
+    }
+    .search-btn:hover { opacity: 0.82; }
+
+    /* ── Filter chips ── */
+    .filter-tabs { display: flex; gap: 6px; margin-bottom: 32px; flex-wrap: wrap; }
+    .filter-tab {
+      padding: 5px 14px; font-size: 12px; font-weight: 500;
+      border: 1px solid var(--border); border-radius: 4px;
+      background: transparent; color: var(--muted);
+      cursor: pointer; font-family: 'Inter', 'Sarabun', sans-serif;
+      transition: all 0.15s;
+    }
+    .filter-tab:hover { border-color: var(--border-hover); color: var(--text); }
+    .filter-tab.active { background: var(--accent-dim); border-color: var(--accent); color: var(--text); }
+
+    /* ── Status ── */
+    #status { font-size: 12px; color: var(--muted); margin-bottom: 20px; min-height: 18px; }
+
+    /* ── AI Explain box ── */
+    #explain-box {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 5px; padding: 18px 20px;
+      margin-bottom: 28px; display: none;
+    }
+    #explain-box .ex-label {
+      font-size: 10px; font-weight: 600; letter-spacing: 0.16em;
+      text-transform: uppercase; color: var(--muted); margin-bottom: 10px;
+    }
+    #explain-box .ex-text {
+      font-size: 14px; font-weight: 300; line-height: 1.72;
+      color: var(--bio-color); white-space: pre-wrap;
+    }
+    .ex-thinking { display: flex; gap: 5px; align-items: center; font-size: 13px; color: var(--muted); }
+    .ex-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--accent); animation: pulse 1.4s ease-in-out infinite; }
+    .ex-dot:nth-child(2) { animation-delay: 0.2s; }
+    .ex-dot:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes pulse { 0%,80%,100% { opacity: 0.2; transform: scale(0.9); } 40% { opacity: 1; transform: scale(1); } }
+
+    /* ── Result sections ── */
+    .result-section { margin-bottom: 36px; }
+    .section-label {
+      font-size: 10px; font-weight: 600; letter-spacing: 0.16em;
+      text-transform: uppercase; color: var(--muted);
+      margin-bottom: 12px; padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .section-badge {
+      font-size: 10px; font-weight: 500; letter-spacing: 0;
+      padding: 2px 8px; border-radius: 4px;
+      background: var(--accent-dim); color: var(--accent);
+    }
+
+    /* ── Result cards ── */
+    .result-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 5px; padding: 16px 18px;
+      margin-bottom: 8px;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .result-card:hover { border-color: var(--border-hover); background: var(--surface2); }
+    .card-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 8px; }
+    .card-title { font-size: 13px; font-weight: 500; line-height: 1.4; flex: 1; color: var(--text); }
+    .card-score { font-size: 10px; font-weight: 500; color: var(--muted); flex-shrink: 0; padding-top: 2px; }
+    .card-snippet { font-size: 12.5px; font-weight: 300; color: var(--bio-color); line-height: 1.65; margin-bottom: 10px; }
+    .card-footer { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    .card-tag {
+      font-size: 10px; font-weight: 500; letter-spacing: 0.06em;
+      text-transform: uppercase; padding: 2px 8px; border-radius: 4px;
+      background: var(--accent-dim); color: var(--accent);
+    }
+    .card-id { font-size: 11px; color: var(--muted); }
+    .card-expand {
+      margin-left: auto; font-size: 11px; color: var(--accent);
+      cursor: pointer; background: none; border: none;
+      font-family: inherit; padding: 0;
+    }
+    .card-expand:hover { text-decoration: underline; }
+    .card-full {
+      display: none; margin-top: 12px;
+      font-size: 12.5px; line-height: 1.7; color: var(--bio-color);
+      padding-top: 12px; border-top: 1px solid var(--border);
+    }
+
+    /* ── Empty state ── */
+    .empty { text-align: center; padding: 56px 0; color: var(--muted); font-size: 14px; line-height: 2; }
+    .empty-icon { font-size: 36px; margin-bottom: 12px; opacity: 0.5; }
+
+    /* ── CTA ── */
+    .cta-banner {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 5px; padding: 24px 28px;
+      text-align: center; margin-top: 48px;
+    }
+    .cta-banner h3 { font-size: 15px; font-weight: 600; margin-bottom: 8px; }
+    .cta-banner p { font-size: 13px; font-weight: 300; color: var(--muted); margin-bottom: 18px; line-height: 1.6; }
+    .cta-btn {
+      display: inline-block; padding: 10px 24px; font-size: 13px; font-weight: 500;
+      background: var(--accent); color: var(--bg);
+      border-radius: 5px; text-decoration: none;
+      transition: opacity 0.15s;
+    }
+    .cta-btn:hover { opacity: 0.82; }
+
+    /* ── Footer disclaimer ── */
+    .disclaimer {
+      margin-top: 48px; padding-top: 20px;
+      border-top: 1px solid var(--border);
+      font-size: 11px; color: var(--muted); line-height: 1.7; text-align: center;
+    }
+
+    @media (max-width: 600px) {
+      main { padding: 80px 16px 60px; }
+      nav { padding: 0 16px; }
+      .nav-disclaimer { display: none; }
+      .theme-toggle { top: 13px; right: 14px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="page-glow"></div>
+
+<nav>
+  <a class="tg-e" href="/">
+    <div class="tg-e-bars"><span></span><span></span><span></span></div>
+    <span class="tg-e-label">Legal Work <em>by TonyGroup</em></span>
+  </a>
+  <div class="nav-links">
+    <a class="nav-link active" href="/search">ค้นกฎหมาย</a>
+    <a class="nav-link" href="/analyze">วิเคราะห์คดี</a>
+    <a class="nav-link" href="/draft">ร่างเอกสาร</a>
+  </div>
+  <div class="nav-right">
+    <span class="nav-disclaimer">ไม่ใช่คำปรึกษาทางกฎหมาย</span>
+  </div>
+</nav>
+
+<main>
+
+  <div class="page-header">
+    <div class="page-eyebrow">Legal Knowledge Base</div>
+    <h1 class="page-title">ค้นหากฎหมายไทย</h1>
+    <p class="page-sub">กฎหมายหลัก 42,755 ฉบับ · กฎ คปภ. 249 ฉบับ · คำพิพากษาฎีกา 1,207 คดี<br/>ค้นหาด้วยภาษาธรรมชาติ รู้ผลทันที</p>
+  </div>
+
+  <!-- Search -->
+  <div class="search-wrap">
+    <svg class="search-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+    </svg>
+    <input id="search-input" type="text" autocomplete="off" spellcheck="false"
+           placeholder="เช่น: ขับรถชนคนเสียชีวิต โทษอะไร · ประกันชีวิตไม่จ่าย ทำยังไง"/>
+    <button class="search-btn" onclick="doSearch()">ค้นหา</button>
+  </div>
+
+  <!-- Filters -->
+  <div class="filter-tabs">
+    <button class="filter-tab active" data-db="all" onclick="setDb(this)">ทั้งหมด</button>
+    <button class="filter-tab" data-db="thai" onclick="setDb(this)">กฎหมายหลัก</button>
+    <button class="filter-tab" data-db="oic" onclick="setDb(this)">ประกันภัย คปภ.</button>
+    <button class="filter-tab" data-db="civil" onclick="setDb(this)">แพ่งและพาณิชย์</button>
+    <button class="filter-tab" data-db="criminal" onclick="setDb(this)">อาญา</button>
+    <button class="filter-tab" data-db="court" onclick="setDb(this)">คำพิพากษาฎีกา</button>
+  </div>
+
+  <div id="status"></div>
+
+  <div id="explain-box">
+    <div class="ex-label">AI สรุปให้ · ภาษาชาวบ้าน</div>
+    <div id="explain-content"></div>
+  </div>
+
+  <div id="results"></div>
+
+  <div id="empty-state" class="empty">
+    <div class="empty-icon">⚖</div>
+    <div>พิมพ์คำถามหรือประเด็นกฎหมายที่สนใจ<br/>แล้วกด <strong>ค้นหา</strong> หรือ Enter</div>
+  </div>
+
+  <div class="cta-banner">
+    <h3>ต้องการคำปรึกษาเฉพาะกรณีของคุณ?</h3>
+    <p>ข้อมูลที่แสดงเป็นเพียงการอ้างอิงเบื้องต้น<br/>รายละเอียดค่าเสียหาย บทลงโทษ และสิทธิต่างๆ ขึ้นอยู่กับข้อเท็จจริงในคดี</p>
+    <a class="cta-btn" href="tel:+66800000000">ปรึกษาทนายความ TonyGroup ฟรี</a>
+  </div>
+
+  <div class="disclaimer">
+    ข้อมูลนี้จัดทำเพื่อการศึกษาและอ้างอิงเบื้องต้นเท่านั้น ไม่ถือเป็นคำปรึกษาทางกฎหมาย<br/>
+    สำหรับคดีจริงกรุณาปรึกษาทนายความ · TonyGroup Legal © 2026
+  </div>
+
+</main>
+
+<script>
+  (function(){
+
+  })();
+  function toggleTheme() {
+    const next = cur === 'dark' ? 'light' : 'dark';
+
+  }
+
+  const API = '';
+  let currentDb = 'all';
+  let lastQuery = '';
+
+  document.getElementById('search-input').addEventListener('keydown', e => {
+    if (e.key === 'Enter') doSearch();
+  });
+
+  function setDb(el) {
+    document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+    el.classList.add('active');
+    currentDb = el.dataset.db;
+    if (lastQuery) doSearch();
+  }
+
+  async function doSearch() {
+    const q = document.getElementById('search-input').value.trim();
+    if (!q) return;
+    lastQuery = q;
+    document.getElementById('empty-state').style.display = 'none';
+    document.getElementById('results').innerHTML = '';
+    document.getElementById('status').textContent = 'กำลังค้นหา…';
+    showExplaining();
+    const [searchRes] = await Promise.all([fetchSearch(q), fetchExplain(q)]);
+    renderResults(searchRes, q);
+  }
+
+  async function fetchSearch(q) {
+    try {
+      const r = await fetch(`${API}/api/search?q=${encodeURIComponent(q)}&db=${currentDb}&k=5`);
+      return await r.json();
+    } catch(e) { return {error: e.message}; }
+  }
+
+  async function fetchExplain(q) {
+    const box = document.getElementById('explain-box');
+    box.style.display = 'block';
+    try {
+      const r = await fetch(`${API}/api/explain?q=${encodeURIComponent(q)}`);
+      const data = await r.json();
+      document.getElementById('explain-content').innerHTML =
+        `<div class="ex-text">${escHtml(data.explanation || 'ไม่มีข้อมูล')}</div>`;
+    } catch(e) {
+      document.getElementById('explain-content').innerHTML =
+        `<div class="ex-text" style="color:var(--muted)">ไม่สามารถโหลดคำอธิบาย AI ได้</div>`;
+    }
+  }
+
+  function showExplaining() {
+    const box = document.getElementById('explain-box');
+    box.style.display = 'block';
+    document.getElementById('explain-content').innerHTML = `
+      <div class="ex-thinking">
+        <div class="ex-dot"></div><div class="ex-dot"></div><div class="ex-dot"></div>
+        <span style="margin-left:6px">AI กำลังวิเคราะห์…</span>
+      </div>`;
+  }
+
+  const DB_LABELS = {thai:'กฎหมายหลัก', oic:'กฎ คปภ.', court:'ฎีกา', civil:'แพ่งและพาณิชย์', criminal:'อาญา'};
+
+  function renderResults(data, q) {
+    if (!data || data.error) {
+      document.getElementById('status').textContent = 'เกิดข้อผิดพลาด: ' + (data?.error || 'unknown');
+      return;
+    }
+    const {results={}} = data;
+    let totalCount = 0;
+    let html = '';
+    for (const [db, items] of Object.entries(results)) {
+      if (!items?.length) continue;
+      totalCount += items.length;
+      html += `<div class="result-section">
+        <div class="section-label">${DB_LABELS[db] || db}<span class="section-badge">${items.length} ผลลัพธ์</span></div>`;
+      for (const item of items) html += renderCard(item, db, q);
+      html += `</div>`;
+    }
+    if (!totalCount) {
+      html = `<div class="empty"><div class="empty-icon">🔍</div><div>ไม่พบข้อมูลที่ตรงกับ "<strong>${escHtml(q)}</strong>"<br/>ลองใช้คำอื่น หรือ ปรึกษาทนายโดยตรง</div></div>`;
+    }
+    document.getElementById('results').innerHTML = html;
+    document.getElementById('status').textContent = totalCount ? `พบ ${totalCount} ผลลัพธ์` : '';
+  }
+
+  function renderCard(item, db, q) {
+    const id = Math.random().toString(36).slice(2,7);
+    const title = escHtml(item.title || `คดีเลขที่ ${item.issueid || ''} (${item.year || ''})`);
+    const tag = DB_LABELS[db] || db;
+    const docId = item.sysid || item.issueid || '';
+    const score = item.score ? `${(item.score * 100).toFixed(0)}%` : '';
+    let snippet = '';
+    if (item.snippet) snippet = highlight(escHtml(item.snippet.trim()), q);
+    else if (item.fact) snippet = highlight(escHtml(item.fact.trim()), q);
+    let extra = '';
+    if ((db === 'civil' || db === 'criminal') && item.article) {
+      const label = db === 'civil' ? 'บทบัญญัติแพ่งฯ' : 'บทบัญญัติอาญา';
+      extra = `<div class="card-full" id="full-${id}"><strong>${label}:</strong> ${highlight(escHtml(item.article), q)}</div>`;
+    } else if (db === 'court' && item.decision) {
+      extra = `<div class="card-full" id="full-${id}"><strong>คำพิพากษา:</strong> ${highlight(escHtml(item.decision), q)}${item.lawids ? `<br/><strong>กฎหมาย:</strong> ${escHtml(item.lawids)}` : ''}</div>`;
+    }
+    const expandLabel = (db === 'civil' || db === 'criminal') ? 'ดูบทบัญญัติ ▾' : 'ดูคำพิพากษา ▾';
+    return `<div class="result-card">
+      <div class="card-header"><div class="card-title">${title}</div>${score ? `<div class="card-score">${score}</div>` : ''}</div>
+      ${snippet ? `<div class="card-snippet">${snippet}</div>` : ''}
+      <div class="card-footer">
+        <span class="card-tag">${tag}</span>
+        ${docId ? `<span class="card-id"># ${escHtml(docId)}</span>` : ''}
+        ${extra ? `<button class="card-expand" onclick="toggleFull('${id}',this)">${expandLabel}</button>` : ''}
+      </div>${extra}
+    </div>`;
+  }
+
+  function toggleFull(id, btn) {
+    const el = document.getElementById('full-' + id);
+    if (!el) return;
+    const open = el.style.display === 'block';
+    const origLabel = btn.dataset.origLabel || btn.textContent;
+    if (!btn.dataset.origLabel) btn.dataset.origLabel = origLabel;
+    el.style.display = open ? 'none' : 'block';
+    btn.textContent = open ? origLabel : 'ซ่อน ▴';
+  }
+
+  function highlight(text, q) {
+    const terms = q.split(/\s+/).filter(t => t.length >= 2);
+    let out = text;
+    for (const t of terms) {
+      const re = new RegExp(`(${t.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')})`, 'gi');
+      out = out.replace(re, '<mark style="background:var(--accent-dim);color:inherit;border-radius:2px;padding:0 1px">$1</mark>');
+    }
+    return out;
+  }
+
+  function escHtml(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+</script>
+</body>
+</html>

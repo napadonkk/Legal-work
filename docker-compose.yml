@@ -1,0 +1,31 @@
+services:
+  legal-rag-api:
+    build: .
+    image: legal-rag-api:latest
+    container_name: legal-rag-api
+    restart: unless-stopped
+    environment:
+      - TZ=Asia/Bangkok
+      - DATA_DIR=/data
+      - MINIMAX_AUTH=/root/.hermes/auth.json
+    volumes:
+      - /root/webapp/legal-rag-api/data:/data:ro
+      - /root/.hermes/auth.json:/root/.hermes/auth.json:ro
+      - /root/webapp/legal-rag-api/main.py:/app/main.py:ro
+      - /root/webapp/legal-rag-api/index.html:/app/index.html:ro
+      - /root/webapp/legal-rag-api/search.html:/app/search.html:ro
+      - /root/webapp/legal-rag-api/analyze.html:/app/analyze.html:ro
+      - /root/webapp/legal-rag-api/draft.html:/app/draft.html:ro
+    networks:
+      - proxy-net
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.legal-rag-api.rule=Host(`legal-work.tonygroup.org`)"
+      - "traefik.http.routers.legal-rag-api.entrypoints=web"
+      - "traefik.http.services.legal-rag-api.loadbalancer.server.port=8000"
+      - "com.openclaw.project=legal-rag-api"
+      - "com.openclaw.owner=johny"
+
+networks:
+  proxy-net:
+    external: true
