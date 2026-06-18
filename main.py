@@ -280,14 +280,13 @@ class DraftRequest(BaseModel):
     special: Optional[str] = None
 
 DRAFT_TEMPLATES = {
-    "employment": "ร่างสัญญาจ้างงาน ระหว่างนายจ้างและลูกจ้าง",
-    "sale": "ร่างสัญญาซื้อขายทรัพย์สิน",
-    "lease": "ร่างสัญญาเช่าทรัพย์สิน",
-    "loan": "ร่างสัญญากู้ยืมเงิน",
-    "service": "ร่างสัญญาจ้างบริการ",
-    "nda": "ร่างสัญญาไม่เปิดเผยข้อมูล (Non-Disclosure Agreement)",
-    "poa": "ร่างหนังสือมอบอำนาจ",
-    "notice": "ร่างหนังสือบอกกล่าวทางกฎหมาย",
+    "employment_contract": "ร่างสัญญาจ้างงาน ระหว่างนายจ้างและลูกจ้าง",
+    "sale_contract": "ร่างสัญญาซื้อขายทรัพย์สิน",
+    "lease_contract": "ร่างสัญญาเช่าทรัพย์สิน",
+    "loan_contract": "ร่างสัญญากู้ยืมเงิน",
+    "power_of_attorney": "ร่างหนังสือมอบอำนาจ",
+    "notice_letter": "ร่างหนังสือบอกกล่าวทางกฎหมาย",
+    "complaint_letter": "ร่างหนังสือร้องเรียน",
 }
 
 
