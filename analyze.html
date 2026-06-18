@@ -360,8 +360,28 @@
         signal: ctrl.signal
       });
       clearTimeout(timer);
-      const data = await r.json();
-      renderMemo(data);
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      const reader = r.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
+      let fullText = "";
+      while (true) {
+        const {done, value} = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, {stream: true});
+        const lines = buffer.split("\n");
+        buffer = lines.pop();
+        for (const line of lines) {
+          if (!line.startsWith("data: ")) continue;
+          const raw = line.slice(6).trim();
+          if (raw === "[DONE]") break;
+          let d;
+          try { d = JSON.parse(raw); } catch (e) { continue; }
+          if (d.error) throw new Error(d.error);
+          if (d.text) { fullText += d.text; }
+        }
+      }
+      renderMemo({memo: fullText});
     } catch(e) {
       renderError(e.name === 'AbortError' ? 'หมดเวลา — กรุณาลองใหม่อีกครั้ง' : e.message);
     } finally {

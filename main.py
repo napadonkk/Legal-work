@@ -319,15 +319,22 @@ async def analyze_endpoint(body: AnalyzeRequest):
         f"ตอบเป็น structured Thai legal memo:\n{struct}\n\n"
         "กฎ: ตอบภาษาไทย ละเอียด ครบถ้วน ระบุมาตรา / ฎีกาให้ชัดเจน"
     )
-    try:
-        msg = claude().messages.create(
-            model="MiniMax-Text-01",
-            max_tokens=900,
-            messages=[{"role": "user", "content": prompt}],
-        )
-        return {"memo": msg.content[0].text}
-    except Exception as e:
-        return {"error": str(e)}
+    def _analyze_gen():
+        try:
+            with claude().messages.stream(
+                model="MiniMax-Text-01",
+                max_tokens=1500,
+                messages=[{"role": "user", "content": prompt}],
+            ) as stream:
+                for text in stream.text_stream:
+                    yield "data: " + json.dumps({"text": text}) + "\n\n"
+            yield "data: [DONE]\n\n"
+        except Exception as e:
+            yield "data: " + json.dumps({"error": str(e)}) + "\n\n"
+            yield "data: [DONE]\n\n"
+
+    return StreamingResponse(_analyze_gen(), media_type="text/event-stream",
+                             headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"})
 
 @app.post("/api/draft")
 async def draft_endpoint(body: DraftRequest):
