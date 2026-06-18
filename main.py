@@ -9,7 +9,7 @@ import numpy as np
 from sentence_transformers import SentenceTransformer
 from fastapi import FastAPI, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, StreamingResponse
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
@@ -331,7 +331,7 @@ async def analyze_endpoint(body: AnalyzeRequest):
 
 @app.post("/api/draft")
 async def draft_endpoint(body: DraftRequest):
-    """Generate full Thai legal document from template + fields."""
+    """Stream Thai legal document generation via SSE."""
     template_desc = DRAFT_TEMPLATES.get(body.template_id)
     if not template_desc:
         return {"error": f"ไม่รู้จัก template_id '{body.template_id}'"}
@@ -341,17 +341,24 @@ async def draft_endpoint(body: DraftRequest):
         f"คุณคือทนายความไทยผู้เชี่ยวชาญ กรุณา{template_desc}\n\n"
         f"ข้อมูลที่ได้รับ:\n{fields_text}\n\n"
         "คำสั่ง:\n"
-        "- ร่างเอกสารฉบับสมบูรณ์ ถูกต้องตามรูปแบบกฎหมายไทย\n"
-        "- ใช้ภาษากฎหมายที่เป็นทางการ\n"
-        "- ใส่ช่องลงนาม วันที่ และพยานตามที่เหมาะสม\n"
+        "- ร่างเอกสารให้ครบทุกข้อ ไม่ตัดข้อความกลางคัน\n"
+        "- ใช้ภาษากฎหมายที่เป็นทางการ กระชับ\n"
+        "- ใส่ช่องลงนาม วันที่ และพยานท้ายสัญญา\n"
         "- ถ้าข้อมูลใดไม่ครบ ให้ใส่ [...] ไว้แทน"
     )
-    try:
-        msg = claude().messages.create(
-            model="MiniMax-Text-01",
-            max_tokens=900,
-            messages=[{"role": "user", "content": prompt}],
-        )
-        return {"document": msg.content[0].text}
-    except Exception as e:
-        return {"error": str(e)}
+    def _stream_gen():
+        try:
+            with claude().messages.stream(
+                model="MiniMax-Text-01",
+                max_tokens=2000,
+                messages=[{"role": "user", "content": prompt}],
+            ) as stream:
+                for text in stream.text_stream:
+                    yield f"data: {json.dumps({'text': text})}\n\n"
+            yield "data: [DONE]\n\n"
+        except Exception as e:
+            yield f"data: {json.dumps({'error': str(e)})}\n\n"
+            yield "data: [DONE]\n\n"
+
+    return StreamingResponse(_stream_gen(), media_type="text/event-stream",
+                             headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"})
