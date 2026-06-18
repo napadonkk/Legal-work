@@ -6,6 +6,9 @@ services:
     restart: unless-stopped
     environment:
       - TZ=Asia/Bangkok
+      - OMP_NUM_THREADS=1
+      - TOKENIZERS_PARALLELISM=false
+      - MKL_NUM_THREADS=1
       - DATA_DIR=/data
       - MINIMAX_AUTH=/root/.hermes/auth.json
     volumes:

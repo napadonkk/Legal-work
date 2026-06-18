@@ -292,7 +292,7 @@
           </select>
         </div>
 
-        <button class="btn-analyze" onclick="doAnalyze()">วิเคราะห์คดี</button>
+        <button id="btn-analyze" class="btn-analyze" onclick="doAnalyze()">วิเคราะห์คดี</button>
       </div>
     </div>
 
@@ -342,6 +342,7 @@
   }
 
   async function doAnalyze() {
+    const btn = document.getElementById("btn-analyze");
     const facts = document.getElementById('facts').value.trim();
     if (!facts) { document.getElementById('facts').focus(); return; }
     btn.disabled = true; btn.textContent = 'กำลังวิเคราะห์…';

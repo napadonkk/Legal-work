@@ -4,7 +4,7 @@ Legal RAG API — FastAPI backend for legal-work.tonygroup.org search tab
 Databases: Thai Law (42K cleaned), OIC Insurance (249), Supreme Court (1,207),
            Civil & Commercial (1,874 article-level), Criminal (453 article-level)
 """
-import os, sys, pickle, time, json, faiss
+import os, sys, pickle, time, json, faiss, asyncio
 import numpy as np
 from sentence_transformers import SentenceTransformer
 from fastapi import FastAPI, Query, Request
@@ -224,6 +224,7 @@ def explain_endpoint(q: str = Query(..., min_length=1, max_length=300)):
 - ตอบภาษาไทย ชัดเจน ครอบคลุม"""
 
     try:
+        print("[DEBUG] calling MiniMax", flush=True)
         msg = claude().messages.create(
             model="MiniMax-Text-01",
             max_tokens=500,
@@ -265,112 +266,44 @@ class AnalyzeRequest(BaseModel):
     categories: List[str] = []
 
 @app.post("/api/analyze")
-@limiter.limit("20/minute")
-def analyze_endpoint(request: Request, body: AnalyzeRequest):
-    """Structured legal memo via MiniMax — searches all 3 DBs, no word cap."""
+async def analyze_endpoint(body: AnalyzeRequest):
     ctx_lines = []
+    q = body.question if body.question else body.facts[:200]
     for label, getter in [("แพ่งและพาณิชย์", civil), ("อาญา", criminal),
                            ("กฎหมายอื่น", thai), ("กฎ คปภ.", oic), ("ฎีกา", court)]:
         try:
-            for r in getter().search(body.question, top_k=3):
-                title   = r.get("title") or f"คดี {r.get('issueid','')} ({r.get('year','')})"
+            for r in getter().search(q, top_k=3):
+                title = r.get("title") or "ข้อมูลกฎหมาย"
                 snippet = r.get("snippet", "")[:300]
                 ctx_lines.append(f"[{label}] {title}: {snippet}")
         except Exception:
             pass
-
     context_str = "\n".join(ctx_lines) or "ไม่พบข้อมูลที่เกี่ยวข้อง"
-
     fmt = body.format.lower()
     if fmt == "timeline":
-        structure_instruction = "เรียงลำดับเหตุการณ์ตามเวลา (chronological) โดยใช้หัวข้อ:\n## ลำดับเหตุการณ์\n## บทบัญญัติที่เกี่ยวข้อง\n## ข้อสรุป"
+        struct = "## ลำดับเหตุการณ์\n## บทบัญญัติที่เกี่ยวข้อง\n## ข้อสรุป"
     elif fmt == "compare":
-        structure_instruction = "เปรียบเทียบแนวคำพิพากษาโดยใช้หัวข้อ:\n## ประเด็นเปรียบเทียบ\n## แนวคำพิพากษาฝ่าย A\n## แนวคำพิพากษาฝ่าย B\n## ข้อสรุป"
-    else:  # memo
-        structure_instruction = "ตอบเป็น structured Thai legal memo โดยใช้หัวข้อ:\n## ประเด็นกฎหมาย\n## บทบัญญัติที่เกี่ยวข้อง\n## แนวคำพิพากษา\n## ข้อสรุป"
-
-    prompt = f"""คุณคือนักกฎหมายไทยผู้เชี่ยวชาญ วิเคราะห์ข้อเท็จจริงและตอบคำถามกฎหมายอย่างครบถ้วน
-
-ข้อเท็จจริง:
-{body.facts}
-
-คำถาม: {body.question}
-
-ข้อมูลกฎหมายอ้างอิง:
-{context_str}
-
-{structure_instruction}
-
-กฎ:
-- ตอบภาษาไทย ละเอียด ครบถ้วน
-- ระบุจำนวนเงิน ค่าปรับ หรือโทษได้ตามที่กฎหมายกำหนด
-- อ้างอิงมาตรา / ฎีกาให้ชัดเจน"""
-
+        struct = "## ประเด็นเปรียบเทียบ\n## แนวคำพิพากษาฝ่าย A\n## แนวคำพิพากษาฝ่าย B\n## ข้อสรุป"
+    else:
+        struct = "## ประเด็นกฎหมาย\n## บทบัญญัติที่เกี่ยวข้อง\n## แนวคำพิพากษา\n## ข้อสรุป"
+    prompt = (
+        "คุณคือนักกฎหมายไทยผู้เชี่ยวชาญ วิเคราะห์ข้อเท็จจริงและตอบคำถามกฎหมายอย่างครบถ้วน\n\n"
+        f"ข้อเท็จจริง:\n{body.facts}\n\n"
+        f"คำถาม: {body.question}\n\n"
+        f"ข้อมูลกฎหมายอ้างอิง:\n{context_str}\n\n"
+        f"ตอบเป็น structured Thai legal memo:\n{struct}\n\n"
+        "กฎ: ตอบภาษาไทย ละเอียด ครบถ้วน ระบุมาตรา / ฎีกาให้ชัดเจน"
+    )
     try:
         msg = claude().messages.create(
             model="MiniMax-Text-01",
-            max_tokens=2000,
+            max_tokens=900,
             messages=[{"role": "user", "content": prompt}],
         )
-        memo = msg.content[0].text
+        return {"memo": msg.content[0].text}
     except Exception as e:
         return {"error": str(e)}
 
-    return {"memo": memo}
 
-
-# ── POST /api/draft ──────────────────────────────────────────────────────────
-DRAFT_TEMPLATES = {
-    "sale_contract": "ร่างสัญญาซื้อขายทรัพย์สินฉบับสมบูรณ์ตามกฎหมายไทย ระบุคู่สัญญา วัตถุแห่งสัญญา ราคา เงื่อนไข และการส่งมอบ",
-    "lease_contract": "ร่างสัญญาเช่าทรัพย์สินฉบับสมบูรณ์ตามกฎหมายไทย ระบุคู่สัญญา ทรัพย์ที่เช่า ค่าเช่า ระยะเวลา และเงื่อนไข",
-    "loan_contract": "ร่างสัญญากู้ยืมเงินฉบับสมบูรณ์ตามกฎหมายไทย ระบุผู้กู้ ผู้ให้กู้ จำนวนเงิน ดอกเบี้ย กำหนดชำระ และหลักประกัน",
-    "power_of_attorney": "ร่างหนังสือมอบอำนาจฉบับสมบูรณ์ตามกฎหมายไทย ระบุผู้มอบ ผู้รับมอบ และขอบเขตอำนาจที่มอบ",
-    "notice_letter": "ร่างหนังสือบอกกล่าว/โนติสฉบับสมบูรณ์ตามกฎหมายไทย ระบุผู้ส่ง ผู้รับ ประเด็นที่บอกกล่าว และระยะเวลาที่กำหนด",
-    "complaint_letter": "ร่างคำร้องทุกข์ฉบับสมบูรณ์ตามกฎหมายไทย ระบุผู้ร้อง ผู้ถูกร้อง เหตุการณ์ และสิ่งที่ขอให้ดำเนินการ",
-    "employment_contract": "ร่างสัญญาจ้างงานฉบับสมบูรณ์ตามกฎหมายแรงงานไทย ระบุนายจ้าง ลูกจ้าง ตำแหน่ง ค่าจ้าง เวลาทำงาน และสิทธิประโยชน์",
-}
-
-class DraftRequest(BaseModel):
-    template_id: str
-    party_a: Optional[str] = None
-    party_b: Optional[str] = None
-    amount: Optional[str] = None
-    # allow extra fields via model_config
-    model_config = {"extra": "allow"}
-
-@app.post("/api/draft")
-@limiter.limit("20/minute")
-def draft_endpoint(request: Request, body: DraftRequest):
-    """Generate full Thai legal document from template + fields."""
-    template_desc = DRAFT_TEMPLATES.get(body.template_id)
-    if not template_desc:
-        return {"error": f"ไม่รู้จัก template_id '{body.template_id}'. รองรับ: {', '.join(DRAFT_TEMPLATES)}"}
-
-    # Collect all provided fields
-    fields_dict = body.model_dump(exclude_none=True)
-    fields_text = "\n".join(f"- {k}: {v}" for k, v in fields_dict.items() if k != "template_id")
-
-    prompt = f"""คุณคือทนายความไทยผู้เชี่ยวชาญ กรุณา{template_desc}
-
-ข้อมูลที่ได้รับ:
-{fields_text}
-
-คำสั่ง:
-- ร่างเอกสารฉบับสมบูรณ์ ถูกต้องตามรูปแบบกฎหมายไทย
-- ใช้ภาษากฎหมายที่เป็นทางการ
-- ใส่ช่องลงนาม วันที่ และพยานตามที่เหมาะสม
-- ถ้าข้อมูลใดไม่ครบ ให้ใส่ [...] ไว้แทน"""
-
-    try:
-        msg = claude().messages.create(
-            model="MiniMax-Text-01",
-            max_tokens=3000,
-            messages=[{"role": "user", "content": prompt}],
-        )
-        document = msg.content[0].text
-    except Exception as e:
-        return {"error": str(e)}
-
-    return {"document": document}
 
 
