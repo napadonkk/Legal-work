@@ -265,6 +265,32 @@ class AnalyzeRequest(BaseModel):
     format: str = "memo"          # memo | timeline | compare
     categories: List[str] = []
 
+class DraftRequest(BaseModel):
+    template_id: str
+    date: Optional[str] = None
+    place: Optional[str] = None
+    party1: Optional[str] = None
+    addr1: Optional[str] = None
+    party2: Optional[str] = None
+    addr2: Optional[str] = None
+    position: Optional[str] = None
+    salary: Optional[str] = None
+    start: Optional[str] = None
+    probation: Optional[str] = None
+    special: Optional[str] = None
+
+DRAFT_TEMPLATES = {
+    "employment": "ร่างสัญญาจ้างงาน ระหว่างนายจ้างและลูกจ้าง",
+    "sale": "ร่างสัญญาซื้อขายทรัพย์สิน",
+    "lease": "ร่างสัญญาเช่าทรัพย์สิน",
+    "loan": "ร่างสัญญากู้ยืมเงิน",
+    "service": "ร่างสัญญาจ้างบริการ",
+    "nda": "ร่างสัญญาไม่เปิดเผยข้อมูล (Non-Disclosure Agreement)",
+    "poa": "ร่างหนังสือมอบอำนาจ",
+    "notice": "ร่างหนังสือบอกกล่าวทางกฎหมาย",
+}
+
+
 @app.post("/api/analyze")
 async def analyze_endpoint(body: AnalyzeRequest):
     ctx_lines = []
@@ -304,6 +330,29 @@ async def analyze_endpoint(body: AnalyzeRequest):
     except Exception as e:
         return {"error": str(e)}
 
-
-
-
+@app.post("/api/draft")
+async def draft_endpoint(body: DraftRequest):
+    """Generate full Thai legal document from template + fields."""
+    template_desc = DRAFT_TEMPLATES.get(body.template_id)
+    if not template_desc:
+        return {"error": f"ไม่รู้จัก template_id '{body.template_id}'"}
+    fields_dict = {k: v for k, v in body.model_dump().items() if v and k != "template_id"}
+    fields_text = "\n".join(f"- {k}: {v}" for k, v in fields_dict.items())
+    prompt = (
+        f"คุณคือทนายความไทยผู้เชี่ยวชาญ กรุณา{template_desc}\n\n"
+        f"ข้อมูลที่ได้รับ:\n{fields_text}\n\n"
+        "คำสั่ง:\n"
+        "- ร่างเอกสารฉบับสมบูรณ์ ถูกต้องตามรูปแบบกฎหมายไทย\n"
+        "- ใช้ภาษากฎหมายที่เป็นทางการ\n"
+        "- ใส่ช่องลงนาม วันที่ และพยานตามที่เหมาะสม\n"
+        "- ถ้าข้อมูลใดไม่ครบ ให้ใส่ [...] ไว้แทน"
+    )
+    try:
+        msg = claude().messages.create(
+            model="MiniMax-Text-01",
+            max_tokens=900,
+            messages=[{"role": "user", "content": prompt}],
+        )
+        return {"document": msg.content[0].text}
+    except Exception as e:
+        return {"error": str(e)}

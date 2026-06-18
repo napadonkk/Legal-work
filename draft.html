@@ -387,7 +387,7 @@
           <textarea id="f-special" rows="3" placeholder="เช่น: ห้ามทำงานกับคู่แข่ง 1 ปีหลังลาออก"></textarea>
         </div>
 
-        <button class="btn-generate" onclick="doDraft()">ร่างเอกสาร</button>
+        <button id="btn-draft" class="btn-generate" onclick="doDraft()">ร่างเอกสาร</button>
       </div>
     </div>
 
@@ -446,6 +446,7 @@
   }
 
   async function doDraft() {
+    const btn = document.getElementById("btn-draft");
     btn.disabled = true; btn.textContent = 'กำลังร่าง…';
 
     const fields = {
