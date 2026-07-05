@@ -10,6 +10,7 @@ from sentence_transformers import SentenceTransformer
 from fastapi import FastAPI, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, StreamingResponse
+from fastapi.staticfiles import StaticFiles
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
@@ -156,6 +157,7 @@ def criminal():
 # ── FastAPI ──────────────────────────────────────────────────────────────────
 limiter = Limiter(key_func=get_remote_address)
 app = FastAPI(title="Legal RAG API", version="1.0")
+app.mount("/images", StaticFiles(directory="/app/images"), name="images")
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 app.add_middleware(
@@ -184,6 +186,8 @@ def search_page(): return FileResponse(f"{_HTML}/search.html")
 def analyze_page(): return FileResponse(f"{_HTML}/analyze.html")
 @app.get("/draft")
 def draft_page(): return FileResponse(f"{_HTML}/draft.html")
+@app.get("/accident-claim")
+def accident_claim_page(): return FileResponse(f"{_HTML}/accident-claim.html")
 
 
 @app.get("/api/health")

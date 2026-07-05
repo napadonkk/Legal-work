@@ -19,6 +19,8 @@ services:
       - /root/webapp/legal-rag-api/search.html:/app/search.html:ro
       - /root/webapp/legal-rag-api/analyze.html:/app/analyze.html:ro
       - /root/webapp/legal-rag-api/draft.html:/app/draft.html:ro
+      - /root/webapp/legal-rag-api/accident-claim.html:/app/accident-claim.html:ro
+      - /root/webapp/legal-rag-api/images:/app/images:ro
     networks:
       - proxy-net
     labels:
