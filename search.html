@@ -416,24 +416,35 @@
     const tag = DB_LABELS[db] || db;
     const docId = item.sysid || item.issueid || '';
     const score = item.score ? `${(item.score * 100).toFixed(0)}%` : '';
-    let snippet = '';
-    if (item.snippet) snippet = highlight(escHtml(item.snippet.trim()), q);
-    else if (item.fact) snippet = highlight(escHtml(item.fact.trim()), q);
-    let extra = '';
+    // snippet: 280-char preview + expandable full text for all DB types
+    const rawSnip = (item.snippet || item.fact || '').trim();
+    const PREVIEW = 280;
+    const snippetShort = rawSnip.length > PREVIEW ? rawSnip.slice(0, PREVIEW) + '…' : rawSnip;
+    const snippetHtml = snippetShort ? highlight(escHtml(snippetShort), q) : '';
+
+    // extra full-text block
+    let extraText = '';
+    let extraLabel = '';
     if ((db === 'civil' || db === 'criminal') && item.article) {
       const label = db === 'civil' ? 'บทบัญญัติแพ่งฯ' : 'บทบัญญัติอาญา';
-      extra = `<div class="card-full" id="full-${id}"><strong>${label}:</strong> ${highlight(escHtml(item.article), q)}</div>`;
+      extraText = `<strong>${label}:</strong> ${highlight(escHtml(item.article), q)}`;
+      extraLabel = 'ดูบทบัญญัติ ▾';
     } else if (db === 'court' && item.decision) {
-      extra = `<div class="card-full" id="full-${id}"><strong>คำพิพากษา:</strong> ${highlight(escHtml(item.decision), q)}${item.lawids ? `<br/><strong>กฎหมาย:</strong> ${escHtml(item.lawids)}` : ''}</div>`;
+      extraText = `<strong>คำพิพากษา:</strong> ${highlight(escHtml(item.decision), q)}${item.lawids ? `<br/><strong>กฎหมาย:</strong> ${escHtml(item.lawids)}` : ''}`;
+      extraLabel = 'ดูคำพิพากษา ▾';
+    } else if (rawSnip.length > PREVIEW) {
+      extraText = highlight(escHtml(rawSnip), q);
+      extraLabel = 'อ่านต่อ ▾';
     }
-    const expandLabel = (db === 'civil' || db === 'criminal') ? 'ดูบทบัญญัติ ▾' : 'ดูคำพิพากษา ▾';
+    const extra = extraText ? `<div class="card-full" id="full-${id}">${extraText}</div>` : '';
+
     return `<div class="result-card">
       <div class="card-header"><div class="card-title">${title}</div>${score ? `<div class="card-score">${score}</div>` : ''}</div>
-      ${snippet ? `<div class="card-snippet">${snippet}</div>` : ''}
+      ${snippetHtml ? `<div class="card-snippet">${snippetHtml}</div>` : ''}
       <div class="card-footer">
         <span class="card-tag">${tag}</span>
         ${docId ? `<span class="card-id"># ${escHtml(docId)}</span>` : ''}
-        ${extra ? `<button class="card-expand" onclick="toggleFull('${id}',this)">${expandLabel}</button>` : ''}
+        ${extra ? `<button class="card-expand" onclick="toggleFull('${id}',this)">${extraLabel}</button>` : ''}
       </div>${extra}
     </div>`;
   }

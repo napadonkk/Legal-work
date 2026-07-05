@@ -82,7 +82,7 @@ class LawSearcher:
             combined = float(sim) + kw_boost
 
             results.append({**meta, "score": round(combined, 4), "sim": round(float(sim), 4),
-                             "snippet": snippet[:380]})
+                             "snippet": snippet[:1500]})
 
         results.sort(key=lambda r: r["score"], reverse=True)
         for i, r in enumerate(results, 1):
